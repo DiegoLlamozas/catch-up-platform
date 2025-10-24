@@ -3,7 +3,7 @@ using CatchUpPlatform.API.News.Domain.Model.Queries;
 using CatchUpPlatform.API.News.Domain.Repositories;
 using CatchUpPlatform.API.Shared.Domain.Services;
 
-namespace CatchUpPlatform.API.News.Appplication.Internal.CommandServices;
+namespace CatchUpPlatform.API.News.Appplication.Internal.QueryServices;
 
 public class FavoriteSourceQueryService(
     IFavoriteSourceRepository favoriteSourceRepository

@@ -1,9 +1,9 @@
 using System.Net.Mime;
 using CatchUpPlatform.API.News.Domain.Model.Commands;
 using CatchUpPlatform.API.News.Domain.Model.Queries;
-using CatchUpPlatform.API.News.Domain.Services;
 using CatchUpPlatform.API.News.Interfaces.REST.Resources;
 using CatchUpPlatform.API.News.Interfaces.REST.Transform;
+using CatchUpPlatform.API.Shared.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
