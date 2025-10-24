@@ -9,6 +9,4 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     {
         await context.SaveChangesAsync();
     }
-    
-    
 }
