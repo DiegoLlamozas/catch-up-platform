@@ -1,0 +1,75 @@
+using System.Net.Mime;
+using CatchUpPlatform.API.News.Domain.Model.Commands;
+using CatchUpPlatform.API.News.Domain.Model.Queries;
+using CatchUpPlatform.API.News.Domain.Services;
+using CatchUpPlatform.API.News.Interfaces.REST.Resources;
+using CatchUpPlatform.API.News.Interfaces.REST.Transform;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+
+namespace CatchUpPlatform.API.News.Interfaces.REST;
+
+[ApiController]
+[Route("api/1v/[controller]")]
+[Produces(MediaTypeNames.Application.Json)]
+[Tags("Favorite Sources")]
+public class FavoriteSourcesController(
+    IFavoriteSourceCommandService favoriteSourceCommandService,
+    IFavoriteSourceQueryService favoriteSourceQueryService) : ControllerBase
+{
+    [HttpGet("{id:int}")]
+    [SwaggerOperation(
+        Summary = "Get Gavorite Source by Id",
+        Description = "Retrieve a favorite source by its unique identifier."
+        )]
+    
+    public async Task<IActionResult> GetFavoriteSourceById(int id)
+    
+    {
+        var geFavoriteSourceById = new GetFavoriteSourceByIdQuery(id);
+        var result = await favoriteSourceQueryService.Handle(geFavoriteSourceById);
+        
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        var resource = FavoriteSourceResourceFromEntityAssembler.ToResourceFromEntity(result);
+        return Ok(resource);
+    }
+    
+    [HttpPost]
+    [SwaggerOperation(
+        Summary = " Create Favorite Source",
+        Description = "Create a new favorite source.",
+        OperationId = "CreateFavoriteSource"
+        )]
+    [SwaggerResponse(201, "Favorite Source created successfully.", typeof(FavoriteSourceResource))]
+    [SwaggerResponse(400, "Invalid input data.")]
+    [SwaggerResponse(409, "Favorite source with this SourceId already exists for the NewsAPI Key.")]
+    public async Task<IActionResult> CreateFavoriteSource([FromBody] CreateFavoriteSourceResource resource)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
+        var createFavoriteSourceCommand = CreateFavoriteSourceCommandFromResourceAssembler.ToCommandFromResource(resource);
+        
+        
+
+        try
+        {
+            var result = await favoriteSourceCommandService.Handle(createFavoriteSourceCommand);
+            if (result is null) return BadRequest();
+            
+            return CreatedAtAction(
+                nameof(GetFavoriteSourceById),
+                new { id = result.Id },
+                FavoriteSourceResourceFromEntityAssembler.ToResourceFromEntity(result)
+            );
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+}
